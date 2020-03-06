@@ -3,18 +3,28 @@ import VueRouter from 'vue-router'
 // import Home from '../views/Home.vue'
 import home from '@/views/home'
 import login from '@/views/login'
-
+import SecondHome from '@/views/home/second'
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/login'
   },
   {
     path: '/home',
     name: 'home',
-    component: home
+    component: home,
+    children: [
+      {
+        path: '',
+        component: SecondHome
+      },
+      {
+        path: '/home/comment',
+        component: () => import('../views/comment')
+      }
+    ]
   },
   {
     path: '/login',

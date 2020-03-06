@@ -76,7 +76,7 @@ export default {
         }).then(result => {
           // 接口调取成功把钥匙存入自己的口袋中也就是存入本地
           console.log(result)
-          window.localStorage.setItem('user-token', result.data.data.token)
+          window.localStorage.setItem('user-token', result.data.token)
           // 并且跳转到登入页面用到编程式路由
           this.$router.push('/home')
         }).catch(() => {
