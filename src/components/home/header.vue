@@ -74,7 +74,7 @@ export default {
       // method: 'GET'
 
     }).then(result => {
-      console.log(result)
+      // console.log(result)
       this.userInfor = result.data
     })
   }

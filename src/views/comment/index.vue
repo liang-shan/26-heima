@@ -38,7 +38,9 @@
 
          :current-page="page.currentPage"
          :total="page.total"
-         :page-size="page.pageSize">
+         :page-size="page.pageSize"
+         @current-change="changePage">
+
       </el-pagination>
     </el-row>
 
@@ -53,32 +55,38 @@ export default {
       page: {
         total: 100,
         currentPage: 1,
-        pageSize: 6
+        pageSize: 10
       },
       tableList: []
     }
   },
   methods: {
+    // 监听页数改变,传给axios参数
+    changePage (newPage) {
+      // alert(newPage)
+      this.page.currentPage = newPage
+      this.getComment() // 获取评论
+    },
     // 获取分页的数据,显示到页面上
 
     // 获取评论数据,并赋值给tableList
     getComment () {
-      debugger
       this.$axios({
         url: '/articles', // 请求地址
         params: {
-          response_type: 'comment' // 此参数用来控制获取数据类型
-          // page: this.page.currentPage, // 查对应页码
-          // per_page: this.page.pageSize // 查10条
+          response_type: 'comment', // 此参数用来控制获取数据类型
+          page: this.page.currentPage, // 查对应页码
+          per_page: this.page.pageSize // 查10条
+
         }
         // query参数应该在哪个位置传 axios
         // params 传get参数也就是query参数
         // data   传body参数也就是请求体参数
       }).then(result => {
         //  将返回结果的中 数组 给list
-        // console.log(result)
-
+        console.log(result)
         this.tableList = result.data.results
+        this.page.total = result.data.total_count// 总数
       })
     },
     formatterBool (row, column, cellValue, index) {
