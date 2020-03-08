@@ -1,6 +1,12 @@
 <template>
 <el-card>
-  <el-table :data="tableList" style="width: 100%">
+  <el-table :data="tableList" style="width: 100%"
+
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+  >
     <el-table-column
         prop="title"
         label="标题"
@@ -57,7 +63,8 @@ export default {
         currentPage: 1,
         pageSize: 10
       },
-      tableList: []
+      tableList: [],
+      loading: false
     }
   },
   methods: {
@@ -71,6 +78,7 @@ export default {
 
     // 获取评论数据,并赋值给tableList
     getComment () {
+      this.loading = true
       this.$axios({
         url: '/articles', // 请求地址
         params: {
@@ -87,6 +95,7 @@ export default {
         console.log(result)
         this.tableList = result.data.results
         this.page.total = result.data.total_count// 总数
+        this.loading = false
       })
     },
     formatterBool (row, column, cellValue, index) {
