@@ -27,6 +27,12 @@ const routes = [
       {
         path: '/home/material',
         component: () => import('../views/material')
+      }, {
+        path: '/home/articles',
+        component: () => import('../views/articles')
+      }, {
+        path: '/home/publish',
+        component: () => import('../views/publish')
       }
     ]
   },
