@@ -16,7 +16,7 @@
       </el-form-item>
       <!-- 频道选择 -->
       <el-form-item label="频道列表">
-        <el-select v-model="searchForm.channel_id"  placeholder="请选择频道">
+        <el-select   v-model="searchForm.channel_id"  placeholder="请选择频道">
           <el-option
             v-for="item in channels"
             :key="item.id"
@@ -26,15 +26,17 @@
         </el-select>
       </el-form-item>
       <!-- 日期选择 -->
-      <!-- {{searchForm}} -->
+      {{searchForm.value1}}
+
       <el-form-item  label="事件选择">
-        <el-date-picker v-model="searchForm.value1" type="daterange"></el-date-picker>
+        <el-date-picker v-model="searchForm.value1" type="daterange" value-format="yyyy-MM-dd"></el-date-picker>
       </el-form-item>
     </el-form>
 
     <!-- 文章的主体结构 flex布局  -->
     <el-row class="total" type="flex" align="middle">
       <span>共找到条符合条件的内容</span>
+
     </el-row>
     <!-- 列表内容 -->
     <!-- article-item 作为一个循环项 -->
@@ -59,19 +61,35 @@
         </span>
       </div>
     </div>
+     <!-- 放置分页组件 -->
+       <el-row type='flex' justify="center" style='height:80px' align="middle">
+             <!-- 分页组件 -->
+             <el-pagination
+              :current-page="page.currentPage"
+              :page-size="page.pageSize"
+              :total="page.total"
+              @current-change="changePage"
+               background  layout='prev,pager,next'>
+             </el-pagination>
+       </el-row>
   </el-card>
-  <!-- 下边表的部分 -->
+
 </template>
 
 <script>
 export default {
   data () {
     return {
+      page: {
+        currentPage: 1, // 当前页码
+        pageSize: 10, // 接口要求每页 10-50条之间
+        total: 0 // 总数
+      },
       //  定义表单数据
       searchForm: {
         status: 5, // 文章状态，0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除，不传为全部
         channel_id: null,
-        value1: ''
+        value1: []
       },
       channels: [],
       list: [],
@@ -105,7 +123,60 @@ export default {
       }
     }
   },
+  watch: {
+    searchForm: {
+      deep: true, // 固定写法 表示 会深度检测searchForm中的数据变化
+      // handler也是一个固定写法 一旦数据发生任何变化 就会触发 更新
+      handler () {
+        //  统一调用改变条件的 方法
+        // this.page.currentPage = 1 // 只要条件变化 就变成第一页
+        this.changeCondition() // this 指向当前组件实例
+      }
+    }
+  },
   methods: {
+    changePage (newPage) {
+      console.log(newPage)
+
+      this.page.currentPage = newPage // 最新页码
+
+      const params = {
+        page: this.page.currentPage, // 如果条件改变就回到第一页
+        per_page: this.page.pageSize,
+
+        status: this.searchForm.status === 5 ? null : this.searchForm.status,
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate: this.searchForm.value1 && this.searchForm.value1.length ? this.searchForm.value1[0] : null,
+        end_pubdate: this.searchForm.value1 && this.searchForm.value1.length > 1 ? this.searchForm.value1[1] : null
+
+      }
+      this.getArticles(params)
+    },
+
+    changeCondition () {
+      // 文章状态发生改变的时候触发的事件
+      // alert(this.searchForm.status)
+      // 组装条件
+      // console.log(this.searchForm.value1)
+
+      const params = {
+
+        status: this.searchForm.status === 5 ? null : this.searchForm.status,
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate: this.searchForm.value1 && this.searchForm.value1.length ? this.searchForm.value1[0] : null,
+        end_pubdate: this.searchForm.value1 && this.searchForm.value1.length > 1 ? this.searchForm.value1[1] : null
+
+      }
+      // 开始按条件请求接口数据
+      // this.$axios({
+      //   url: '/articles',
+      //   params: params
+      // }).then(result => {
+      //   this.list = result.data.results
+      // })
+
+      this.getArticles(params)
+    },
     // 获取频道
     getChannels () {
       this.$axios({
@@ -116,11 +187,12 @@ export default {
       })
     },
     // 获取文章
-    getArticles () {
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params
       }).then(result => {
-        console.log(result)
+        // console.log(result)
         this.list = result.data.results
       })
     }
