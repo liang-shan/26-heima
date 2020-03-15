@@ -129,7 +129,7 @@ export default {
       // handler也是一个固定写法 一旦数据发生任何变化 就会触发 更新
       handler () {
         //  统一调用改变条件的 方法
-        // this.page.currentPage = 1 // 只要条件变化 就变成第一页
+        this.page.currentPage = 1 // 只要条件变化 就变成第一页
         this.changeCondition() // this 指向当前组件实例
       }
     }
@@ -140,17 +140,7 @@ export default {
 
       this.page.currentPage = newPage // 最新页码
 
-      const params = {
-        page: this.page.currentPage, // 如果条件改变就回到第一页
-        per_page: this.page.pageSize,
-
-        status: this.searchForm.status === 5 ? null : this.searchForm.status,
-        channel_id: this.searchForm.channel_id,
-        begin_pubdate: this.searchForm.value1 && this.searchForm.value1.length ? this.searchForm.value1[0] : null,
-        end_pubdate: this.searchForm.value1 && this.searchForm.value1.length > 1 ? this.searchForm.value1[1] : null
-
-      }
-      this.getArticles(params)
+      this.changeCondition()
     },
 
     changeCondition () {
@@ -160,6 +150,8 @@ export default {
       // console.log(this.searchForm.value1)
 
       const params = {
+        page: this.page.currentPage, // 如果条件改变就回到第一页
+        per_page: this.page.pageSize,
 
         status: this.searchForm.status === 5 ? null : this.searchForm.status,
         channel_id: this.searchForm.channel_id,
@@ -192,8 +184,9 @@ export default {
         url: '/articles',
         params
       }).then(result => {
-        // console.log(result)
+        console.log(result)
         this.list = result.data.results
+        this.page.total = result.data.total_count // 总数
       })
     }
   },

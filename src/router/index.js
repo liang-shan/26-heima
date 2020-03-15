@@ -33,6 +33,9 @@ const routes = [
       }, {
         path: '/home/publish',
         component: () => import('../views/publish')
+      }, {
+        path: '/home/account',
+        component: () => import('../views/account')
       }
     ]
   },

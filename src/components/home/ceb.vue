@@ -44,7 +44,7 @@
 
          </el-submenu>
         <!-- 账户信息 -->
-         <el-menu-item >
+         <el-menu-item index='/home/account'>
          <i class="el-icon-s-promotion"></i>
          <span >账户信息</span>
         </el-menu-item>
